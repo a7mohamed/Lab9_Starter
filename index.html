@@ -7,6 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "4ac51e9b6f14475e921b0c93baffd465",
+      application: "lab9-demo"
+    });
+  </script>
+
   <style>
     button {
       margin: 3px;
@@ -83,7 +91,9 @@
       <button>Start Timer</button>
       <button>End Timer</button>
       <button>Console Trace</button>
-      <button>Trigger a Global Error</button>
+      <button onclick="triggerGlobalError()">Trigger a Global Error</button>
+      <button onclick="triggerTryCatchDemo()">Try/Catch Demo</button>
+      <button onclick="throwCustomError()">Custom Error</button>
     </section>
   </main>
 
@@ -99,9 +109,96 @@
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
-
     // Start your code here
     // You may move this JS to another file if you wish
+    let data = [{ name: "Alice", score: 90 }, { name: "Bob", score: 85 }];
+    let methods = [
+      "log", "error", "count", "warn", "assert", "clear", "dir", "dirxml",
+      "group", "groupEnd", "table", "time", "timeEnd", "trace"
+    ];
+
+    errorBtns.forEach((btn, i) => {
+      if (i < methods.length) {
+        btn.addEventListener("click", () => {
+          let method = methods[i];
+          switch (method) {
+            case "assert":
+              console.assert(false, "Assertion failed!");
+              break;
+            case "count":
+              console.count("Counting");
+              break;
+            case "clear":
+              console.clear();
+              break;
+            case "dir":
+              console.dir(document.body);
+              break;
+            case "dirxml":
+              console.dirxml(document.body);
+              break;
+            case "group":
+              console.group("Group Start");
+              console.log("Inside group");
+              break;
+            case "groupEnd":
+              console.groupEnd();
+              break;
+            case "table":
+              console.table(data);
+              break;
+            case "time":
+              console.time("myTimer");
+              break;
+            case "timeEnd":
+              console.timeEnd("myTimer");
+              break;
+            case "trace":
+              console.trace("Trace message");
+              break;
+            default:
+              console[method]("This is a console." + method + " message");
+          }
+        });
+      }
+    });
+
+    // Try/Catch Demo
+    function triggerTryCatchDemo() {
+      try {
+        aintGonnaWork(); // Intentionally undefined
+      } catch (error) {
+        console.error("Caught an error in try/catch:", error);
+      } finally {
+        console.log("Try/Catch complete");
+      }
+    }
+
+    // Custom Error Demo
+    class CustomError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "CustomError";
+      }
+    }
+
+    function throwCustomError() {
+      try {
+        throw new CustomError("Something custom went wrong!");
+      } catch (error) {
+        console.error("Caught a custom error:", error);
+      }
+    }
+
+    // Global error handler
+    window.onerror = function(message, source, lineno, colno, error) {
+      console.log("Global error caught:", message);
+      return true;
+    };
+
+    function triggerGlobalError() {
+      nonexistentFunction(); // Intentionally undefined
+    }
   </script>
 </body>
 
